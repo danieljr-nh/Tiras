@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Editor de Tiras</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+  <img src="logo_Imacal.png" alt="IMACAL">
+  <span class="title">Editor de Tiras</span>
+</header>
+
+<div class="app">
+  <div class="panel">
+    <h3>Configuração da Tira</h3>
+
+    <label>Ângulo corte inicial (°)</label>
+    <input id="angIni" type="number" min="1" max="89" value="45">
+
+    <label>Distância inicial (mm)</label>
+    <input id="distIni" type="number" value="40">
+
+    <h4>Conjuntos de furos</h4>
+
+    <div class="tabs" id="tabs"></div>
+    <div id="groups"></div>
+
+    <button onclick="addGroup()">Adicionar conjunto</button>
+
+    <label>Distância final (mm)</label>
+    <input id="distFim" type="number" value="40">
+
+    <label>Ângulo corte final (°)</label>
+    <input id="angFim" type="number" min="1" max="89" value="45">
+
+    <button onclick="draw()">Atualizar desenho</button>
+  </div>
+
+  <!-- 🔴 CONTAINER COM ROLAGEM -->
+  <div class="canvas">
+    <svg id="svg"></svg>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
