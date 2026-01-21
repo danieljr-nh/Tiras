@@ -14,6 +14,30 @@
 
 <div class="app">
   <div class="panel">
+
+	<h4>Salvar projeto</h4>
+
+	<label>Nome do arquivo</label>
+	<input
+	  id="projectName"
+	  type="text"
+	  inputmode="numeric"
+	  pattern="[0-9]*"
+	  maxlength="15"
+	  placeholder="Somente números (15 dígitos)"
+	>
+
+	<button onclick="exportJSON()">Salvar Tira</button>
+
+	<h4>Importar projeto</h4>
+
+	<label class="file-upload">
+	  <span id="fileLabel">Nenhum arquivo selecionado</span>
+	  <input type="file" id="importFile" accept=".json" hidden>
+	</label>
+
+	<button onclick="exportPDF()">Exportar PDF</button>
+
     <h3>Configuração da Tira</h3>
 
     <label>Ângulo corte inicial (°)</label>

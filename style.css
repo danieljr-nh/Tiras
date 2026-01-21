@@ -64,7 +64,10 @@ body {
 
 h3, h4 {
   margin-top: 0;
+  margin-bottom: 10px;
   color: var(--accent);
+  font-size: 18px;      /* mesmo tamanho */
+  font-weight: 600;    /* mesmo peso */
 }
 
 label {
@@ -134,11 +137,61 @@ button:hover {
 /* 🔴 ÁREA DE DESENHO COM SCROLL */
 .canvas {
   flex: 1;
-  overflow: auto;          /* rolagem horizontal e vertical */
+  overflow-x: hidden; /* nunca rolar horizontal */
+  overflow-y: hidden; /* nunca rolar vertical */  
   background: #0b0d11;
 }
 
 .canvas svg {
-  min-width: 1200px;       /* evita SVG pequeno demais */
+  width: 100%;
   height: 100%;
+  display: block; /* remove espaço extra inline */
 }
+
+/* Espaçamento entre seções do painel */
+.panel h3 {
+  margin-top: 24px;
+}
+
+.file-upload {
+  display: block;
+  padding: 10px;
+  border: 1px dashed var(--panel-border);
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.file-upload:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+@media print {
+  @page {
+    size: A4 landscape;   /* força paisagem */
+    margin: 10mm;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  .header,
+  .panel {
+    display: none;
+  }
+
+  .canvas {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+

@@ -66,9 +66,9 @@ function draw() {
   svg.innerHTML = "";
   groupRanges = [];
 
-  const width = svg.clientWidth;
-  const height = svg.clientHeight;
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+	const height = svg.clientHeight;
+
+
 
   const centerY = height / 2;
   const h = 40;
@@ -133,13 +133,26 @@ function draw() {
   const xInicioReal = xIni - dxIni;
   const xFimReal = xFim + dxFim;
 
+	// ─────────── FIT TO PAGE (auto zoom)
+	const paddingX = 80;
+	const paddingY = 80;
+
+	const contentWidth = (xFimReal - xInicioReal) + paddingX * 2;
+	const contentHeight = h + paddingY * 2;
+
+	svg.setAttribute(
+	  "viewBox",
+	  `${xInicioReal - paddingX} ${y - paddingY} ${contentWidth} ${contentHeight}`
+	);
+
+
   // atualiza inputs (feedback ao usuário)
   angIniInput.value = ini.angle.toFixed(1);
   angFimInput.value = fim.angle.toFixed(1);
 
   // largura dinâmica do SVG (scroll)
   const minWidth = 1200;
-  svg.style.width = Math.max(minWidth, xFim + 300) + "px";
+  //svg.style.width = Math.max(minWidth, xFim + 300) + "px";
 
   // ─────────── TIRA
   drawStripPath(xIni, xFim, y, h, dxIni, dxFim);
@@ -338,6 +351,165 @@ function drawTotalLength(x1, x2, y) {
   g.appendChild(t);
   svg.appendChild(g);
 }
+
+function exportJSON() {
+  const projectNameInput = document.getElementById("projectName");
+  const nome = projectNameInput.value;
+
+  // 🔒 VALIDAÇÃO: exatamente 15 dígitos numéricos
+  if (!/^\d{15}$/.test(nome)) {
+    alert("O nome da tira deve conter exatamente 15 algarismos numéricos (0–9).");
+    projectNameInput.focus();
+    return; // interrompe a exportação
+  }
+
+  const angIni = parseFloat(angIniInput.value);
+  const angFim = parseFloat(angFimInput.value);
+  const distIniMm = parseFloat(distIni.value);
+  const distFimMm = parseFloat(distFim.value);
+
+  const conjuntos = [];
+  let comprimentoUtil = 0;
+
+  [...groupsDiv.children].forEach((group, index) => {
+    const inputs = group.querySelectorAll("input");
+
+    const qtd = parseInt(inputs[0].value, 10);
+    const espacamento = parseFloat(inputs[1].value);
+    const distanciaAteProximo = parseFloat(inputs[2].value);
+
+    const comprimentoConjunto = qtd > 1
+      ? (qtd - 1) * espacamento
+      : 0;
+
+    comprimentoUtil += comprimentoConjunto;
+
+    conjuntos.push({
+      id: index + 1,
+      quantidadeFuros: qtd,
+      distanciaEntreFuros: espacamento,
+      distanciaAteProximo,
+      comprimentoConjunto
+    });
+  });
+
+  let comprimentoTotal = distIniMm + distFimMm;
+
+  conjuntos.forEach(c => {
+    comprimentoTotal += c.comprimentoConjunto;
+    comprimentoTotal += c.distanciaAteProximo;
+  });
+
+  const data = {
+    nome,
+    dataCriacao: new Date().toISOString(),
+    anguloInicial: angIni,
+    anguloFinal: angFim,
+    distanciaInicial: distIniMm,
+    distanciaFinal: distFimMm,
+    comprimentoTotal,
+    conjuntos
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    { type: "application/json" }
+  );
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${nome}.json`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function importJSON() {
+  const fileInput = document.getElementById("importFile");
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Selecione um arquivo JSON.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      // validação básica
+      if (!data.conjuntos || !Array.isArray(data.conjuntos)) {
+        throw new Error("Arquivo inválido.");
+      }
+
+      // preenche campos principais
+      document.getElementById("projectName").value = data.nome || "";
+      angIniInput.value = data.anguloInicial;
+      angFimInput.value = data.anguloFinal;
+      distIni.value = data.distanciaInicial;
+      distFim.value = data.distanciaFinal;
+
+      // limpa conjuntos atuais
+      groupsDiv.innerHTML = "";
+      tabsDiv.innerHTML = "";
+      activeGroupIndex = 0;
+
+      // recria conjuntos
+      data.conjuntos.forEach((c, i) => {
+        addGroup();
+
+        const group = groupsDiv.children[i];
+        const inputs = group.querySelectorAll("input");
+
+        inputs[0].value = c.quantidadeFuros;
+        inputs[1].value = c.distanciaEntreFuros;
+        inputs[2].value = c.distanciaAteProximo ?? 0;
+      });
+
+      activateGroup(0);
+      draw();
+    } catch (err) {
+      alert("Erro ao importar JSON: " + err.message);
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+function exportPDF() {
+  window.print();
+}
+
+document.getElementById("importFile").addEventListener("change", function () {
+  const label = document.getElementById("fileLabel");
+
+  if (this.files.length) {
+    label.textContent = this.files[0].name;
+
+    // 🔴 IMPORTA AUTOMATICAMENTE AO SELECIONAR
+    importJSON();
+	this.value = "";
+  } else {
+    label.textContent = "Nenhum arquivo selecionado";
+  }
+});
+
+const projectNameInput = document.getElementById("projectName");
+
+projectNameInput.addEventListener("input", () => {
+  // remove tudo que não for número
+  let value = projectNameInput.value.replace(/\D/g, "");
+
+  // limita a 15 dígitos
+  value = value.slice(0, 15);
+
+  projectNameInput.value = value;
+});
+
 
 // inputs
 const angIniInput = document.getElementById("angIni");
