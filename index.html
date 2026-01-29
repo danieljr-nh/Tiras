@@ -8,42 +8,51 @@
 <body>
 
 <header class="header">
-  <img src="logo_Imacal.png" alt="IMACAL">
+  <img src="logo_Imacal.png" alt="IMACAL" class="logo">
   <span class="title">Editor de Tiras</span>
 </header>
 
 <div class="app">
   <div class="panel">
 
-	<h4>Salvar projeto</h4>
+    <h4>Salvar projeto</h4>
 
-	<label>Nome do arquivo</label>
-	<input
-	  id="projectName"
-	  type="text"
-	  inputmode="numeric"
-	  pattern="[0-9]*"
-	  maxlength="15"
-	  placeholder="Somente números (15 dígitos)"
-	>
+    <label for="projectName">Nome do arquivo</label>
+    <input
+      id="projectName"
+      type="text"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      maxlength="15"
+      placeholder="Somente números (15 dígitos)"
+    >
 
-	<button onclick="exportJSON()">Salvar Tira</button>
+    <button onclick="exportJSON()">Salvar Tira</button>
 
-	<h4>Importar projeto</h4>
+    <h4>Importar projeto</h4>
 
-	<label class="file-upload">
-	  <span id="fileLabel">Nenhum arquivo selecionado</span>
-	  <input type="file" id="importFile" accept=".json" hidden>
-	</label>
+    <!-- 🔹 BOTÃO + INPUT OCULTO -->
+    <div class="file-upload">
+      <button id="btnImport" type="button">Importar arquivo</button>
+      <span id="fileLabel" class="file-label">Nenhum arquivo selecionado</span>
 
-	<button onclick="exportPDF()">Exportar PDF</button>
+      <input
+        type="file"
+        id="importFile"
+        accept=".json,.csv"
+        hidden
+      >
+    </div>
+
+    <button onclick="exportPDF()">Exportar PDF</button>
+    <button onclick="exportCSV()">Exportar Programa (CSV)</button>
 
     <h3>Configuração da Tira</h3>
 
-    <label>Ângulo corte inicial (°)</label>
+    <label for="angIni">Ângulo corte inicial (°)</label>
     <input id="angIni" type="number" min="1" max="89" value="45">
 
-    <label>Distância inicial (mm)</label>
+    <label for="distIni">Distância inicial (mm)</label>
     <input id="distIni" type="number" value="40">
 
     <h4>Conjuntos de furos</h4>
@@ -53,19 +62,27 @@
 
     <button onclick="addGroup()">Adicionar conjunto</button>
 
-    <label>Distância final (mm)</label>
+    <label for="distFim">Distância final (mm)</label>
     <input id="distFim" type="number" value="40">
 
-    <label>Ângulo corte final (°)</label>
+    <label for="angFim">Ângulo corte final (°)</label>
     <input id="angFim" type="number" min="1" max="89" value="45">
 
     <button onclick="draw()">Atualizar desenho</button>
   </div>
 
-  <!-- 🔴 CONTAINER COM ROLAGEM -->
+
   <div class="canvas">
-    <svg id="svg"></svg>
-  </div>
+
+    <!-- 🔹 TÍTULO DO PROJETO -->
+    <div id="projectTitle" class="project-title">
+      Projeto: —
+    </div>
+
+  <svg id="svg"></svg>
+</div>
+
+
 </div>
 
 <script src="script.js"></script>

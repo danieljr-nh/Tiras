@@ -37,13 +37,29 @@ body {
   gap: 16px;
 }
 
-.header img {
-  height: 42px;
+.header .logo {
+  height: 52px; 
+  width: auto;
 }
 
 .title {
   font-size: 18px;
   font-weight: 600;
+}
+
+.project-title {
+  width: 100%;
+  text-align: center;
+
+  /* tipografia alinhada ao projeto */
+  font-size: 22px;        /* maior, mas elegante */
+  font-weight: 700;
+  letter-spacing: 0.5px;
+
+  color: var(--text, #fff); /* reaproveita variáveis se existirem */
+  opacity: 0.95;
+
+  margin: 8px 0 10px 0;
 }
 
 /* LAYOUT PRINCIPAL */
@@ -171,7 +187,7 @@ button:hover {
 
 @media print {
   @page {
-    size: A4 landscape;   /* força paisagem */
+    size: A4 landscape;
     margin: 10mm;
   }
 
@@ -179,14 +195,35 @@ button:hover {
     margin: 0;
   }
 
-  .header,
+  /* 🔴 ESCONDE APENAS O PAINEL */
   .panel {
-    display: none;
+    display: none !important;
   }
 
+  /* ✅ MANTÉM O HEADER VISÍVEL */
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    height: 64px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .header .title {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 🔹 LOGO MAIOR NO PDF */
+  .header .logo {
+    height: 56px;
+    width: auto;
+  }
+
+  /* 🔹 AJUSTA ÁREA DO DESENHO */
   .canvas {
     width: 100vw;
-    height: 100vh;
+    height: calc(100vh - 64px); /* desconta o header */
   }
 
   svg {
@@ -194,4 +231,5 @@ button:hover {
     height: 100%;
   }
 }
+
 
