@@ -6,6 +6,8 @@ const scale = 3;
 const MAX_GROUPS = 10;
 let activeGroupIndex = 0;
 
+const CSV_FACTOR = 10;
+
 // guarda o intervalo X de cada conjunto
 let groupRanges = [];
 
@@ -493,8 +495,10 @@ function gerarProgramaInterpretador() {
   linhas.push(`INI ${tradutor}`);
 
   // DISTÂNCIAS INICIAIS
-  linhas.push(`DST DI1 ${distIniMm}`);
-  linhas.push(`DST DI2 ${distIniMm}`);
+  //linhas.push(`DST DI1 ${distIniMm}`);
+  linhas.push(`DST DI1 ${distIniMm * CSV_FACTOR}`);
+  //linhas.push(`DST DI2 ${distIniMm}`);
+  linhas.push(`DST DI2 ${distIniMm * CSV_FACTOR}`);
 
   // CONJUNTOS
   [...groupsDiv.children].slice(0, MAX_CJ).forEach((group, i) => {
@@ -503,7 +507,8 @@ function gerarProgramaInterpretador() {
     const qtd = parseInt(inputs[0].value, 10) || 0;
     const espacamento = parseFloat(inputs[1].value) || 0;
 
-    linhas.push(`CJT CJ${i + 1} ${qtd} ${espacamento}`);
+    //linhas.push(`CJT CJ${i + 1} ${qtd} ${espacamento}`);
+	linhas.push(`CJT CJ${i + 1} ${qtd} ${espacamento * CSV_FACTOR}`);
   });
 
   // COMPLETA CONJUNTOS FALTANTES (se houver menos de 5)
@@ -519,14 +524,20 @@ function gerarProgramaInterpretador() {
     d.push(parseFloat(inputs[2].value) || 0);
   });
 
-  linhas.push(`DST D12 ${d[0] || 0}`);
-  linhas.push(`DST D23 ${d[1] || 0}`);
-  linhas.push(`DST D34 ${d[2] || 0}`);
-  linhas.push(`DST D45 ${d[3] || 0}`);
+  //linhas.push(`DST D12 ${d[0] || 0}`);
+  //linhas.push(`DST D23 ${d[1] || 0}`);
+  //linhas.push(`DST D34 ${d[2] || 0}`);
+  //linhas.push(`DST D45 ${d[3] || 0}`);
+  linhas.push(`DST D12 ${(d[0] || 0) * CSV_FACTOR}`);
+  linhas.push(`DST D23 ${(d[1] || 0) * CSV_FACTOR}`);
+  linhas.push(`DST D34 ${(d[2] || 0) * CSV_FACTOR}`);
+  linhas.push(`DST D45 ${(d[3] || 0) * CSV_FACTOR}`);
 
   // DISTÂNCIAS FINAIS
-  linhas.push(`DST DF1 ${distFimMm}`);
-  linhas.push(`DST DF2 ${distFimMm}`);
+  //linhas.push(`DST DF1 ${distFimMm}`);
+  //linhas.push(`DST DF2 ${distFimMm}`);
+  linhas.push(`DST DF1 ${distFimMm * CSV_FACTOR}`);
+  linhas.push(`DST DF2 ${distFimMm * CSV_FACTOR}`);
 
   // RECORTE (fixo)
   linhas.push(`DST RF1 0`);
@@ -569,7 +580,7 @@ function exportCSV() {
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${nome}.csv`; // 👈 extensão pedida
+  a.download = `${nome}.CSV`; // 👈 extensão pedida
   a.click();
 
   URL.revokeObjectURL(url);
@@ -604,12 +615,18 @@ function importCSV(file) {
         // DST
         if (p[0] === "DST") {
           switch (p[1]) {
-            case "DI1": distIniMm = +p[2]; break;
-            case "DF1": distFimMm = +p[2]; break;
-            case "D12": distEntre[0] = +p[2]; break;
-            case "D23": distEntre[1] = +p[2]; break;
-            case "D34": distEntre[2] = +p[2]; break;
-            case "D45": distEntre[3] = +p[2]; break;
+            //case "DI1": distIniMm = +p[2]; break;
+            //case "DF1": distFimMm = +p[2]; break;
+            //case "D12": distEntre[0] = +p[2]; break;
+            //case "D23": distEntre[1] = +p[2]; break;
+            //case "D34": distEntre[2] = +p[2]; break;
+            //case "D45": distEntre[3] = +p[2]; break;
+			case "DI1": distIniMm = +p[2] / CSV_FACTOR; break;
+			case "DF1": distFimMm = +p[2] / CSV_FACTOR; break;
+			case "D12": distEntre[0] = +p[2] / CSV_FACTOR; break;
+			case "D23": distEntre[1] = +p[2] / CSV_FACTOR; break;
+			case "D34": distEntre[2] = +p[2] / CSV_FACTOR; break;
+			case "D45": distEntre[3] = +p[2] / CSV_FACTOR; break;
           }
         }
 
@@ -624,7 +641,8 @@ function importCSV(file) {
           const id = parseInt(p[1].replace("CJ", ""), 10);
           conjuntos[id - 1] = {
             quantidadeFuros: +p[2],
-            distanciaEntreFuros: +p[3]
+            //distanciaEntreFuros: +p[3]
+			distanciaEntreFuros: +p[3] / CSV_FACTOR
           };
         }
       });
